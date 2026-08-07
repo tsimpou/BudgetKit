@@ -10,7 +10,8 @@ use Illuminate\Support\Collection;
 // Each category gets three computed properties:
 //   - assigned:  budget amount set for this month
 //   - spent:     total expenses in this month
-//   - available: assigned - spent (what remains to spend)
+//   - available: leftover balance carried forward from all prior months plus this
+//                month's assigned, minus this month's spent (envelope rollover)
 class CategoriesWithMonthDataQuery
 {
     public function __construct(
@@ -20,10 +21,12 @@ class CategoriesWithMonthDataQuery
 
     public function handle(): Collection
     {
+        $cutoff = Carbon::createFromDate($this->year, $this->month, 1)->endOfMonth();
+
         return Category::where('is_goal', false)
             ->orderBy('sort_order')
             ->get()
-            ->map(function ($category) {
+            ->map(function ($category) use ($cutoff) {
                 $assigned = (float) ($category->budgets()
                     ->where('year', $this->year)
                     ->where('month', $this->month)
@@ -35,7 +38,21 @@ class CategoriesWithMonthDataQuery
                     ->whereMonth('date', $this->month)
                     ->sum('amount');
 
-                $available   = $assigned - $spent;
+                $cumulativeAssigned = (float) $category->budgets()
+                    ->where(function ($q) {
+                        $q->where('year', '<', $this->year)
+                            ->orWhere(function ($q2) {
+                                $q2->where('year', $this->year)->where('month', '<=', $this->month);
+                            });
+                    })
+                    ->sum('amount');
+
+                $cumulativeSpent = (float) $category->transactions()
+                    ->where('type', 'expense')
+                    ->where('date', '<=', $cutoff)
+                    ->sum('amount');
+
+                $available   = $cumulativeAssigned - $cumulativeSpent;
                 $totalBudget = $assigned;
                 $pct         = $totalBudget > 0 ? min(100, round($spent / $totalBudget * 100)) : 0;
 

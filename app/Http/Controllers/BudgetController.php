@@ -46,7 +46,7 @@ class BudgetController extends Controller
             'category'      => $category,
             'assigned'      => $detail['assigned'],
             'spent'         => $detail['spent'],
-            'available'     => $detail['assigned'] - $detail['spent'],
+            'available'     => $detail['available'],
             'readyToAssign' => (new ReadyToAssignQuery)->handle(),
             'year'          => $date->year,
             'month'         => $date->month,

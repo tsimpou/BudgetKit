@@ -3,9 +3,10 @@
 namespace App\Queries\Budget;
 
 use App\Models\Category;
+use Carbon\Carbon;
 
-// Returns the assigned budget and total spent for a single category in a given month.
-// Used on the budget detail page (BudgetController@show).
+// Returns the assigned budget, total spent, and rolled-over available balance
+// for a single category in a given month. Used on the budget detail page (BudgetController@show).
 class CategoryMonthDetailQuery
 {
     public function __construct(
@@ -16,6 +17,8 @@ class CategoryMonthDetailQuery
 
     public function handle(): array
     {
+        $cutoff = Carbon::createFromDate($this->year, $this->month, 1)->endOfMonth();
+
         $assigned = (float) ($this->category->budgets()
             ->where('year', $this->year)
             ->where('month', $this->month)
@@ -27,9 +30,24 @@ class CategoryMonthDetailQuery
             ->whereMonth('date', $this->month)
             ->sum('amount');
 
+        $cumulativeAssigned = (float) $this->category->budgets()
+            ->where(function ($q) {
+                $q->where('year', '<', $this->year)
+                    ->orWhere(function ($q2) {
+                        $q2->where('year', $this->year)->where('month', '<=', $this->month);
+                    });
+            })
+            ->sum('amount');
+
+        $cumulativeSpent = (float) $this->category->transactions()
+            ->where('type', 'expense')
+            ->where('date', '<=', $cutoff)
+            ->sum('amount');
+
         return [
-            'assigned' => $assigned,
-            'spent'    => $spent,
+            'assigned'  => $assigned,
+            'spent'     => $spent,
+            'available' => $cumulativeAssigned - $cumulativeSpent,
         ];
     }
 }
