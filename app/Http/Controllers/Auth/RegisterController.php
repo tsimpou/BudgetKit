@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class RegisterController extends Controller
@@ -20,14 +19,18 @@ class RegisterController extends Controller
 
     public function store(RegisterRequest $request): RedirectResponse
     {
+        $onVercel = (bool) (env('VERCEL') || env('VERCEL_ENV'));
+
         $user = User::create([
             'name'              => $request->name,
             'email'             => $request->email,
-            'password'          => Hash::make($request->password),
-            'email_verified_at' => config('mail.default') === 'array' ? now() : null,
+            'password'          => $request->password,
+            'email_verified_at' => $onVercel ? now() : null,
         ]);
 
-        event(new Registered($user));
+        if (! $onVercel) {
+            event(new Registered($user));
+        }
 
         Auth::login($user);
 

@@ -38,6 +38,7 @@
         "SESSION_LIFETIME": "120",
         "SESSION_SECURE_COOKIE": "true",
         "MAIL_MAILER": "array",
+        "HASH_DRIVER": "argon2id",
         "CACHE_STORE": "array",
         "CACHE_DRIVER": "array",
         "QUEUE_CONNECTION": "sync",
