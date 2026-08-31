@@ -28,7 +28,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "DB_CONNECTION": "pgsql",
         "SESSION_DRIVER": "cookie",
         "CACHE_STORE": "array",
