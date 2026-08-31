@@ -37,6 +37,7 @@
         "SESSION_DRIVER": "database",
         "SESSION_LIFETIME": "120",
         "SESSION_SECURE_COOKIE": "true",
+        "MAIL_MAILER": "array",
         "CACHE_STORE": "array",
         "CACHE_DRIVER": "array",
         "QUEUE_CONNECTION": "sync",
