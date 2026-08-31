@@ -19,5 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->reportable(function (\Throwable $e): void {
+            if (env('VERCEL') || env('VERCEL_ENV')) {
+                error_log('[budget-kit] '.$e->getMessage());
+                error_log($e->getFile().':'.$e->getLine());
+            }
+        });
     })->create();
