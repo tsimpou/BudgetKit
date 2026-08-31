@@ -2,6 +2,7 @@
 
 return [
     'export_csv' => 'Esporta dati (CSV)',
+    'export_description' => 'Scarica tutte le tue transazioni in formato CSV.',
     'import_csv' => 'Importa dati (CSV)',
     'import_title' => 'Importa dati',
     'import_subtitle' => 'Carica un file CSV esportato da questa app per ripristinare le tue transazioni. I duplicati vengono ignorati automaticamente.',

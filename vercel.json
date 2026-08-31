@@ -5,6 +5,8 @@
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.4",
+            "maxDuration": 30,
+            "memory": 1024,
             "includeFiles": "public/build/**"
         }
     },

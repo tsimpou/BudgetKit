@@ -25,19 +25,19 @@
                 @csrf
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="profile-name" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('auth.name') }} <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                    <input id="profile-name" type="text" name="name" value="{{ old('name', $user->name) }}" required autocomplete="name"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                     @error('name')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="mb-8">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="profile-email" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         Email <span class="text-red-500">*</span>
                     </label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                    <input id="profile-email" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="email"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                     @error('email')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
@@ -67,28 +67,28 @@
                 @csrf
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="profile-current-password" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('auth.current_password') }} <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="current_password" required
+                    <input id="profile-current-password" type="password" name="current_password" required autocomplete="current-password"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                     @error('current_password')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="profile-new-password" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('auth.new_password') }} <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="password" required
+                    <input id="profile-new-password" type="password" name="password" required autocomplete="new-password"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                     @error('password')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="mb-8">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="profile-confirm-password" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('auth.confirm_password') }} <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="password_confirmation" required
+                    <input id="profile-confirm-password" type="password" name="password_confirmation" required autocomplete="new-password"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                 </div>
 

@@ -2,8 +2,7 @@
 
 namespace App\Queries\Budget;
 
-use App\Models\Budget;
-use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 
 // Returns how much money is still unassigned to any budget category.
 // Formula: total income (all time) - total assigned across all budgets.
@@ -12,9 +11,12 @@ class ReadyToAssignQuery
 {
     public function handle(): float
     {
-        $totalIncome   = (float) Transaction::where('type', 'income')->sum('amount');
-        $totalAssigned = (float) Budget::sum('amount');
+        $result = DB::selectOne('
+            SELECT
+                (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = ?) -
+                (SELECT COALESCE(SUM(amount), 0) FROM budgets) AS ready
+        ', ['income']);
 
-        return $totalIncome - $totalAssigned;
+        return (float) ($result->ready ?? 0);
     }
 }

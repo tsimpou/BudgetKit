@@ -26,10 +26,10 @@
 
                 {{-- Lingua --}}
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="settings-locale" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('settings.language') }}
                     </label>
-                    <select name="locale"
+                    <select id="settings-locale" name="locale" autocomplete="language"
                             class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                         @foreach($locales as $code => $label)
                             <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $label }}</option>
@@ -39,10 +39,10 @@
 
                 {{-- Valuta --}}
                 <div class="mb-8">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
+                    <label for="settings-currency" class="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">
                         {{ __('settings.currency') }}
                     </label>
-                    <select name="currency"
+                    <select id="settings-currency" name="currency"
                             class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500">
                         @foreach($currencies as $code => $label)
                             <option value="{{ $code }}" {{ $currencyCode === $code ? 'selected' : '' }}>{{ $label }}</option>
@@ -65,7 +65,7 @@
         </div>
         <div class="p-6">
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Scarica tutte le tue transazioni in formato CSV.
+                {{ __('import.export_description') }}
             </p>
             <a href="{{ route('export.csv') }}"
                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition">

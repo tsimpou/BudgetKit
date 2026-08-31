@@ -2,6 +2,7 @@
 
 return [
     'export_csv' => 'Export data (CSV)',
+    'export_description' => 'Download all your transactions as a CSV file.',
     'import_csv' => 'Import data (CSV)',
     'import_title' => 'Import data',
     'import_subtitle' => 'Upload a CSV file exported from this app to restore your transactions. Duplicates are automatically skipped.',
