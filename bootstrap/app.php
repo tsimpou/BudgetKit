@@ -25,4 +25,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 error_log($e->getFile().':'.$e->getLine());
             }
         });
+
+        $exceptions->render(function (\Throwable $e) {
+            if (env('VERCEL') || env('VERCEL_ENV')) {
+                return response(
+                    'Error: '.$e->getMessage()."\n\n".
+                    $e->getFile().':'.$e->getLine()."\n\n".
+                    $e->getTraceAsString(),
+                    500,
+                    ['Content-Type' => 'text/plain; charset=utf-8']
+                );
+            }
+        });
     })->create();
