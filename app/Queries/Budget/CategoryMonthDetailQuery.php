@@ -17,7 +17,8 @@ class CategoryMonthDetailQuery
 
     public function handle(): array
     {
-        $cutoff = Carbon::createFromDate($this->year, $this->month, 1)->endOfMonth();
+        $monthStart = Carbon::createFromDate($this->year, $this->month, 1)->startOfMonth();
+        $cutoff = $monthStart->copy()->endOfMonth();
 
         $assigned = (float) ($this->category->budgets()
             ->where('year', $this->year)
@@ -26,8 +27,7 @@ class CategoryMonthDetailQuery
 
         $spent = (float) $this->category->transactions()
             ->where('type', 'expense')
-            ->whereYear('date', $this->year)
-            ->whereMonth('date', $this->month)
+            ->whereBetween('date', [$monthStart->toDateString(), $cutoff->toDateString()])
             ->sum('amount');
 
         $cumulativeAssigned = (float) $this->category->budgets()

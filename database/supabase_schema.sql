@@ -168,6 +168,12 @@ UPDATE categories SET translation_key = 'other'          WHERE name = 'Altro'   
 -- 2026_04_05_140321_add_receipt_path_to_transactions_table
 ALTER TABLE transactions ADD COLUMN IF NOT EXISTS receipt_path VARCHAR(255) NULL;
 
+-- 2026_08_31_000001_add_performance_indexes
+CREATE INDEX IF NOT EXISTS transactions_date_index ON transactions (date);
+CREATE INDEX IF NOT EXISTS transactions_type_date_index ON transactions (type, date);
+CREATE INDEX IF NOT EXISTS transactions_category_type_date_index ON transactions (category_id, type, date);
+CREATE INDEX IF NOT EXISTS budgets_category_year_month_index ON budgets (category_id, year, month);
+
 -- Mark migrations as run (so artisan migrate won't try again later)
 INSERT INTO migrations (migration, batch)
 SELECT migration, batch FROM (VALUES
@@ -179,6 +185,7 @@ SELECT migration, batch FROM (VALUES
     ('2026_02_14_000003_create_budgets_table', 1),
     ('2026_02_14_000005_create_settings_table', 1),
     ('2026_03_03_000001_add_translation_key_to_categories_table', 1),
-    ('2026_04_05_140321_add_receipt_path_to_transactions_table', 1)
+    ('2026_04_05_140321_add_receipt_path_to_transactions_table', 1),
+    ('2026_08_31_000001_add_performance_indexes', 1)
 ) AS m(migration, batch)
 WHERE NOT EXISTS (SELECT 1 FROM migrations WHERE migration = m.migration);

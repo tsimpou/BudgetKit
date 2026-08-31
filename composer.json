@@ -61,7 +61,8 @@
         ],
         "vercel": [
             "npm run build",
-            "@php scripts/copy-vite-manifest.php"
+            "@php scripts/copy-vite-manifest.php",
+            "@php artisan route:cache --ansi"
         ]
     },
     "extra": {

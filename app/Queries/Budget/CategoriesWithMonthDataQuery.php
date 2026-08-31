@@ -2,7 +2,9 @@
 
 namespace App\Queries\Budget;
 
+use App\Models\Budget;
 use App\Models\Category;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -21,51 +23,71 @@ class CategoriesWithMonthDataQuery
 
     public function handle(): Collection
     {
-        $cutoff = Carbon::createFromDate($this->year, $this->month, 1)->endOfMonth();
+        $monthStart = Carbon::createFromDate($this->year, $this->month, 1)->startOfMonth();
+        $cutoff = $monthStart->copy()->endOfMonth();
 
-        return Category::where('is_goal', false)
+        $categories = Category::where('is_goal', false)
             ->orderBy('sort_order')
-            ->get()
-            ->map(function ($category) use ($cutoff) {
-                $assigned = (float) ($category->budgets()
-                    ->where('year', $this->year)
-                    ->where('month', $this->month)
-                    ->value('amount') ?? 0);
+            ->get();
 
-                $spent = (float) $category->transactions()
-                    ->where('type', 'expense')
-                    ->whereYear('date', $this->year)
-                    ->whereMonth('date', $this->month)
-                    ->sum('amount');
+        if ($categories->isEmpty()) {
+            return $categories;
+        }
 
-                $cumulativeAssigned = (float) $category->budgets()
-                    ->where(function ($q) {
-                        $q->where('year', '<', $this->year)
-                            ->orWhere(function ($q2) {
-                                $q2->where('year', $this->year)->where('month', '<=', $this->month);
-                            });
-                    })
-                    ->sum('amount');
+        $categoryIds = $categories->pluck('id');
 
-                $cumulativeSpent = (float) $category->transactions()
-                    ->where('type', 'expense')
-                    ->where('date', '<=', $cutoff)
-                    ->sum('amount');
+        $monthlyAssigned = Budget::query()
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->whereIn('category_id', $categoryIds)
+            ->where('year', $this->year)
+            ->where('month', $this->month)
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id');
 
-                $available   = $cumulativeAssigned - $cumulativeSpent;
-                $totalBudget = $assigned;
-                $pct         = $totalBudget > 0 ? min(100, round($spent / $totalBudget * 100)) : 0;
+        $monthlySpent = Transaction::query()
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->whereIn('category_id', $categoryIds)
+            ->where('type', 'expense')
+            ->whereBetween('date', [$monthStart->toDateString(), $cutoff->toDateString()])
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id');
 
-                $category->assigned         = $assigned;
-                $category->spent            = $spent;
-                $category->available        = $available;
-                $category->total_budget     = $totalBudget;
-                $category->pct              = $pct;
-                // bar_color variants for desktop (500) and mobile (400/amber/lime) Tailwind classes
-                $category->bar_color        = $available < 0 ? 'bg-red-500' : ($pct >= 80 ? 'bg-yellow-500' : 'bg-green-500');
-                $category->bar_color_mobile = $available < 0 ? 'bg-red-400' : ($pct >= 80 ? 'bg-amber-400' : 'bg-lime-400');
+        $cumulativeAssigned = Budget::query()
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->whereIn('category_id', $categoryIds)
+            ->where(function ($q) {
+                $q->where('year', '<', $this->year)
+                    ->orWhere(function ($q2) {
+                        $q2->where('year', $this->year)->where('month', '<=', $this->month);
+                    });
+            })
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id');
 
-                return $category;
-            });
+        $cumulativeSpent = Transaction::query()
+            ->selectRaw('category_id, SUM(amount) as total')
+            ->whereIn('category_id', $categoryIds)
+            ->where('type', 'expense')
+            ->where('date', '<=', $cutoff->toDateString())
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id');
+
+        return $categories->map(function ($category) use ($monthlyAssigned, $monthlySpent, $cumulativeAssigned, $cumulativeSpent) {
+            $assigned = (float) ($monthlyAssigned[$category->id] ?? 0);
+            $spent = (float) ($monthlySpent[$category->id] ?? 0);
+            $available = (float) ($cumulativeAssigned[$category->id] ?? 0) - (float) ($cumulativeSpent[$category->id] ?? 0);
+            $totalBudget = $assigned;
+            $pct = $totalBudget > 0 ? min(100, round($spent / $totalBudget * 100)) : 0;
+
+            $category->assigned = $assigned;
+            $category->spent = $spent;
+            $category->available = $available;
+            $category->total_budget = $totalBudget;
+            $category->pct = $pct;
+            $category->bar_color = $available < 0 ? 'bg-red-500' : ($pct >= 80 ? 'bg-yellow-500' : 'bg-green-500');
+            $category->bar_color_mobile = $available < 0 ? 'bg-red-400' : ($pct >= 80 ? 'bg-amber-400' : 'bg-lime-400');
+
+            return $category;
+        });
     }
 }

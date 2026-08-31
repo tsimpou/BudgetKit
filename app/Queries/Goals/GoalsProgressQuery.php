@@ -15,11 +15,12 @@ class GoalsProgressQuery
     public function handle(): Collection
     {
         return Category::where('is_goal', true)
+            ->withSum('budgets', 'amount')
             ->orderBy('sort_order')
             ->get()
             ->map(function ($goal) {
-                $saved              = (float) $goal->budgets()->sum('amount');
-                $goal->saved        = $saved;
+                $saved = (float) ($goal->budgets_sum_amount ?? 0);
+                $goal->saved = $saved;
                 $goal->progress_pct = $goal->target_amount > 0
                     ? min(100, round(($saved / $goal->target_amount) * 100))
                     : 0;

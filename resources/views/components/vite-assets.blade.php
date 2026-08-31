@@ -1,16 +1,20 @@
 @php
+    static $cachedManifest = null;
     $entries = ['resources/css/app.css', 'resources/js/app.js'];
-    $manifestData = null;
 
-    foreach ([
-        public_path('build/manifest.json'),
-        base_path('api/build/manifest.json'),
-    ] as $manifestPath) {
-        if (is_file($manifestPath)) {
-            $manifestData = json_decode((string) file_get_contents($manifestPath), true);
-            break;
+    if ($cachedManifest === null) {
+        foreach ([
+            public_path('build/manifest.json'),
+            base_path('api/build/manifest.json'),
+        ] as $manifestPath) {
+            if (is_file($manifestPath)) {
+                $cachedManifest = json_decode((string) file_get_contents($manifestPath), true);
+                break;
+            }
         }
     }
+
+    $manifestData = $cachedManifest;
 @endphp
 
 @if ($manifestData)
