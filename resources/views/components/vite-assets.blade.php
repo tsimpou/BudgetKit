@@ -1,13 +1,21 @@
 @php
     $entries = ['resources/css/app.css', 'resources/js/app.js'];
     $manifestPath = public_path('build/manifest.json');
+    $manifestData = null;
 
-    if (! file_exists($manifestPath) && (env('VERCEL') || env('VERCEL_ENV'))) {
-        $manifestUrl = rtrim((string) config('app.url'), '/').'/build/manifest.json';
+    if (file_exists($manifestPath)) {
+        $manifest = file_get_contents($manifestPath);
+        $manifestData = $manifest ? json_decode($manifest, true) : null;
+    }
+
+    if (! $manifestData && (env('VERCEL') || env('VERCEL_ENV'))) {
+        $baseUrl = env('VERCEL_URL')
+            ? 'https://'.env('VERCEL_URL')
+            : request()->getSchemeAndHttpHost();
+
+        $manifestUrl = rtrim($baseUrl, '/').'/build/manifest.json';
         $manifest = @file_get_contents($manifestUrl);
         $manifestData = $manifest ? json_decode($manifest, true) : null;
-    } else {
-        $manifestData = null;
     }
 @endphp
 
