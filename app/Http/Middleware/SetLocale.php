@@ -16,10 +16,14 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        try {
-            $locale = Setting::get('locale', 'it');
-        } catch (\Throwable) {
-            $locale = 'it';
+        $locale = env('APP_LOCALE');
+
+        if (! $locale) {
+            try {
+                $locale = Setting::get('locale', config('budget.default_locale', 'en'));
+            } catch (\Throwable) {
+                $locale = config('budget.default_locale', 'en');
+            }
         }
 
         App::setLocale($locale);

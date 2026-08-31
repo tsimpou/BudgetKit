@@ -6,7 +6,7 @@ return [
         'it' => 'Italiano',
         'en' => 'English',
     ],
-    'default_locale' => 'it',
+    'default_locale' => 'en',
 
     'currencies' => [
         'EUR' => 'EUR (€)',

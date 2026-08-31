@@ -17,7 +17,7 @@ return new class extends Migration
 
         $now = now();
         DB::table('settings')->insert([
-            ['key' => 'locale',   'value' => 'it', 'created_at' => $now, 'updated_at' => $now],
+            ['key' => 'locale',   'value' => 'en', 'created_at' => $now, 'updated_at' => $now],
             ['key' => 'currency', 'value' => 'EUR', 'created_at' => $now, 'updated_at' => $now],
         ]);
     }

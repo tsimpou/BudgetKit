@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 INSERT INTO settings (key, value, created_at, updated_at) VALUES
-    ('locale', 'it', NOW(), NOW()),
+    ('locale', 'en', NOW(), NOW()),
     ('currency', 'EUR', NOW(), NOW())
 ON CONFLICT (key) DO NOTHING;
 

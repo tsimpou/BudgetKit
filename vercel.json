@@ -27,12 +27,16 @@
         }
     ],
     "env": {
+        "APP_NAME": "BudgetKit",
         "APP_ENV": "production",
         "APP_DEBUG": "false",
+        "APP_LOCALE": "en",
         "APP_MAINTENANCE_DRIVER": "cache",
         "APP_MAINTENANCE_STORE": "array",
         "DB_CONNECTION": "pgsql",
-        "SESSION_DRIVER": "cookie",
+        "SESSION_DRIVER": "database",
+        "SESSION_LIFETIME": "120",
+        "SESSION_SECURE_COOKIE": "true",
         "CACHE_STORE": "array",
         "CACHE_DRIVER": "array",
         "QUEUE_CONNECTION": "sync",
