@@ -8,10 +8,12 @@ use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Queries\Budget\MonthlySummaryQuery;
+use App\Queries\Categories\CategoriesListQuery;
 use App\Queries\Transactions\BudgetExceededQuery;
 use App\Queries\Transactions\MonthlyTransactionsQuery;
 use App\Services\BudgetService;
 use App\Services\ReceiptService;
+use App\Support\PageCache;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -42,7 +44,7 @@ class TransactionController extends Controller
 
         return $this->mobileView('transactions.index', [
             'transactions'     => (new MonthlyTransactionsQuery($date->year, $date->month, $type, $categoryId))->handle(),
-            'categories'       => Category::where('is_goal', false)->orderBy('sort_order')->get(),
+            'categories'       => (new CategoriesListQuery)->handle(),
             'activeType'       => $type,
             'activeCategoryId' => $categoryId,
             'monthName'        => $date->translatedFormat('F Y'),
@@ -87,7 +89,7 @@ class TransactionController extends Controller
     {
         return $this->mobileView('transactions.edit', [
             'transaction' => $transaction,
-            'categories'  => Category::where('is_goal', false)->orderBy('sort_order')->get(),
+            'categories'  => (new CategoriesListQuery)->handle(),
         ]);
     }
 
@@ -103,6 +105,15 @@ class TransactionController extends Controller
         unset($validated['receipt'], $validated['remove_receipt']);
 
         $transaction->update($validated);
+
+        PageCache::forgetMonth(
+            Carbon::parse($validated['date'])->year,
+            Carbon::parse($validated['date'])->month
+        );
+
+        if ($transaction->wasChanged('date')) {
+            PageCache::forgetMonth($transaction->getOriginal('date')->year, $transaction->getOriginal('date')->month);
+        }
 
         if ($request->boolean('remove_receipt')) {
             $this->receiptService->delete($transaction);
@@ -135,7 +146,13 @@ class TransactionController extends Controller
         $year  = request()->integer('year',  Carbon::now()->year);
         $month = request()->integer('month', Carbon::now()->month);
 
+        $transactionDate = $transaction->date;
         $transaction->delete();
+
+        PageCache::forgetMonth(
+            Carbon::parse($transactionDate)->year,
+            Carbon::parse($transactionDate)->month
+        );
 
         session()->flash('success', __('notifications.toast_deleted'));
 

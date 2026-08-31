@@ -2,6 +2,7 @@
 
 namespace App\Queries\Budget;
 
+use App\Support\PageCache;
 use Illuminate\Support\Facades\DB;
 
 // Returns how much money is still unassigned to any budget category.
@@ -11,12 +12,14 @@ class ReadyToAssignQuery
 {
     public function handle(): float
     {
-        $result = DB::selectOne('
-            SELECT
-                (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = ?) -
-                (SELECT COALESCE(SUM(amount), 0) FROM budgets) AS ready
-        ', ['income']);
+        return PageCache::remember('rta', 120, function () {
+            $result = DB::selectOne('
+                SELECT
+                    (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = ?) -
+                    (SELECT COALESCE(SUM(amount), 0) FROM budgets) AS ready
+            ', ['income']);
 
-        return (float) ($result->ready ?? 0);
+            return (float) ($result->ready ?? 0);
+        });
     }
 }

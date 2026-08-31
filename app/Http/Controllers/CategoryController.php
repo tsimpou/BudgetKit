@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Queries\Categories\CategoriesListQuery;
 use App\Services\CategoryService;
+use App\Support\PageCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -38,6 +39,8 @@ class CategoryController extends Controller
 
         Category::create($data);
 
+        PageCache::forget('categories_list');
+
         session()->flash('success', __('notifications.toast_saved'));
 
         return redirect()->route('categories.index');
@@ -57,6 +60,8 @@ class CategoryController extends Controller
     {
         $category->update(array_merge($request->validated(), ['translation_key' => null]));
 
+        PageCache::forget('categories_list');
+
         session()->flash('success', __('notifications.toast_saved'));
 
         return redirect()->route('categories.index');
@@ -71,6 +76,8 @@ class CategoryController extends Controller
             return redirect()->route('categories.index')
                 ->with('error', __('categories.category_has_data'));
         }
+
+        PageCache::forget('categories_list');
 
         session()->flash('success', __('notifications.toast_deleted'));
 

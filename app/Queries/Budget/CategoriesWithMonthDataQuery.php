@@ -5,6 +5,7 @@ namespace App\Queries\Budget;
 use App\Models\Budget;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Support\PageCache;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -22,6 +23,11 @@ class CategoriesWithMonthDataQuery
     ) {}
 
     public function handle(): Collection
+    {
+        return PageCache::remember("cats:{$this->year}:{$this->month}", 180, fn () => $this->load());
+    }
+
+    private function load(): Collection
     {
         $monthStart = Carbon::createFromDate($this->year, $this->month, 1)->startOfMonth();
         $cutoff = $monthStart->copy()->endOfMonth();

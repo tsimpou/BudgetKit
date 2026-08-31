@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Budget;
 use App\Models\Transaction;
+use App\Support\PageCache;
 use Carbon\Carbon;
 
 // Handles write operations related to budget and transactions.
@@ -13,24 +14,32 @@ class BudgetService
     // Creates a new expense transaction from validated form data.
     public function storeExpense(array $data): Transaction
     {
-        return Transaction::create([
+        $transaction = Transaction::create([
             'type'        => 'expense',
             'amount'      => $data['amount'],
             'category_id' => $data['category_id'],
             'date'        => $data['date'],
             'note'        => $data['note'] ?? null,
         ]);
+
+        $this->invalidateForDate($data['date']);
+
+        return $transaction;
     }
 
     // Creates a new income transaction. Income has no category_id.
     public function storeIncome(array $data): Transaction
     {
-        return Transaction::create([
+        $transaction = Transaction::create([
             'type'   => 'income',
             'amount' => $data['amount'],
             'date'   => $data['date'],
             'note'   => $data['note'] ?? null,
         ]);
+
+        $this->invalidateForDate($data['date']);
+
+        return $transaction;
     }
 
     // Sets (or overwrites) the budget limit for a category in a given month.
@@ -41,6 +50,8 @@ class BudgetService
             ['category_id' => $categoryId, 'year' => $year, 'month' => $month],
             ['amount' => $amount]
         );
+
+        PageCache::forgetMonth($year, $month);
     }
 
     // Copies all non-zero budget entries from the previous month into the given month.
@@ -66,6 +77,14 @@ class BudgetService
             }
         }
 
+        PageCache::forgetMonth($year, $month);
+
         return $copied;
+    }
+
+    private function invalidateForDate(string $date): void
+    {
+        $parsed = Carbon::parse($date);
+        PageCache::forgetMonth($parsed->year, $parsed->month);
     }
 }
