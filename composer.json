@@ -61,7 +61,7 @@
         ],
         "vercel": [
             "npm run build",
-            "@php -r \"$src=__DIR__.'/public/build/manifest.json'; $dir=__DIR__.'/api/build'; if (is_file($src)) { if (!is_dir($dir)) mkdir($dir, 0777, true); copy($src, $dir.'/manifest.json'); }\""
+            "@php scripts/copy-vite-manifest.php"
         ]
     },
     "extra": {
