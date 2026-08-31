@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateProfileInfoRequest;
 use App\Http\Requests\UpdateProfilePasswordRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -27,7 +26,7 @@ class ProfileController extends Controller
     public function updatePassword(UpdateProfilePasswordRequest $request)
     {
         Auth::user()->update([
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
         ]);
 
         return back()->with('success_password', __('auth.password_updated'));
