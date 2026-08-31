@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>BudgetKit</title>
     <link rel="icon" type="image/svg+xml" href="/images/logo/logo-icon.svg">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite-assets />
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#667eea] to-[#4ecdc4] text-white pb-24">
 

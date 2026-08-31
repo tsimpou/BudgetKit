@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite-assets />
 
     <!-- Apply dark mode immediately to prevent flash -->
     <x-common.dark-mode-init />
