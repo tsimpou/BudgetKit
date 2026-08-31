@@ -28,7 +28,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
         "DB_CONNECTION": "pgsql",
         "SESSION_DRIVER": "cookie",
         "CACHE_STORE": "array",
@@ -39,6 +39,8 @@
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_ROUTES_CACHE": "/tmp/routes.php",
         "VIEW_COMPILED_PATH": "/tmp",
-        "LOG_CHANNEL": "stderr"
+        "LOG_CHANNEL": "stderr",
+        "LOG_STACK": "stderr",
+        "LOG_EMERGENCY_PATH": "/tmp/laravel.log"
     }
 }

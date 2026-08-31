@@ -17,4 +17,8 @@ require __DIR__.'/../vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
+if (getenv('VERCEL') || getenv('VERCEL_ENV')) {
+    $app->useStoragePath('/tmp/storage');
+}
+
 $app->handleRequest(Request::capture());
