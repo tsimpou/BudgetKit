@@ -62,9 +62,7 @@
         "vercel": [
             "npm run build",
             "@php scripts/copy-vite-manifest.php",
-            "@php artisan route:cache --ansi",
-            "@php -r \"is_dir('bootstrap/cache/views') || mkdir('bootstrap/cache/views', 0755, true);\"",
-            "@php artisan view:cache --ansi"
+            "@php artisan route:cache --ansi"
         ]
     },
     "extra": {

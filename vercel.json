@@ -47,7 +47,7 @@
         "APP_SERVICES_CACHE": "bootstrap/cache/services.php",
         "APP_EVENTS_CACHE": "bootstrap/cache/events.php",
         "APP_ROUTES_CACHE": "bootstrap/cache/routes-v7.php",
-        "VIEW_COMPILED_PATH": "bootstrap/cache/views",
+        "VIEW_COMPILED_PATH": "/tmp",
         "LOG_CHANNEL": "stderr",
         "LOG_STACK": "stderr",
         "LOG_EMERGENCY_PATH": "/tmp/laravel.log"
