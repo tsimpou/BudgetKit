@@ -8,6 +8,8 @@ window.Turbo = Turbo;
 
 Alpine.start();
 
+const NAV_TAB_URLS = ['/', '/budget', '/transactions', '/stats'];
+
 function initPageComponents() {
     if (document.querySelector('#mapOne')) {
         import('./components/map').then(module => module.initMap());
@@ -55,13 +57,60 @@ function updateMobileNav() {
     });
 }
 
+function showTurboLoading() {
+    document.getElementById('turbo-loading')?.classList.remove('hidden');
+}
+
+function hideTurboLoading() {
+    document.getElementById('turbo-loading')?.classList.add('hidden');
+}
+
+function prefetchNavTabs() {
+    const current = window.location.pathname;
+
+    NAV_TAB_URLS.forEach((url) => {
+        if (url !== current) {
+            Turbo.visit(url, { action: 'prefetch' });
+        }
+    });
+}
+
 document.addEventListener('turbo:load', () => {
     Alpine.initTree(document.body);
     initPageComponents();
     updateMobileNav();
+    hideTurboLoading();
+
+    if (document.getElementById('mobile-bottom-nav')) {
+        setTimeout(prefetchNavTabs, 300);
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     initPageComponents();
     updateMobileNav();
 });
+
+document.addEventListener('turbo:before-fetch-request', () => {
+    if (document.getElementById('mobile-bottom-nav')) {
+        showTurboLoading();
+    }
+});
+
+document.addEventListener('turbo:frame-render', hideTurboLoading);
+document.addEventListener('turbo:fetch-request-error', hideTurboLoading);
+document.addEventListener('turbo:visit', (event) => {
+    if (event.detail?.action === 'prefetch') {
+        return;
+    }
+    if (document.getElementById('mobile-bottom-nav')) {
+        showTurboLoading();
+    }
+});
+
+document.addEventListener('touchstart', (event) => {
+    const link = event.target.closest('a[data-turbo-prefetch]');
+    if (link?.href) {
+        Turbo.visit(link.href, { action: 'prefetch' });
+    }
+}, { passive: true });

@@ -55,7 +55,7 @@
         :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen) ?
         'xl:justify-center' :
         'justify-start'">
-        <a href="/" class="flex items-center gap-3">
+        <a href="/" data-turbo-frame="page-content" data-turbo-prefetch class="flex items-center gap-3">
             {{-- Icon (always visible) --}}
             <img src="/images/logo/logo-icon.svg" alt="BudgetKit" width="32" height="32" class="flex-shrink-0" />
             {{-- Text (visible when expanded) --}}
@@ -140,7 +140,7 @@
                                             <ul class="mt-2 space-y-1 ml-9">
                                                 @foreach ($item['subItems'] as $subItem)
                                                     <li>
-                                                        <a href="{{ $subItem['path'] }}" data-turbo-prefetch class="menu-dropdown-item"
+                                                        <a href="{{ $subItem['path'] }}" data-turbo-frame="page-content" data-turbo-prefetch class="menu-dropdown-item"
                                                             :class="isActive('{{ $subItem['path'] }}') ?
                                                                 'menu-dropdown-item-active' :
                                                                 'menu-dropdown-item-inactive'">
@@ -170,7 +170,7 @@
                                         </div>
                                     @else
                                         <!-- Simple Menu Item -->
-                                        <a href="{{ $item['path'] }}" data-turbo-prefetch class="menu-item group"
+                                        <a href="{{ $item['path'] }}" data-turbo-frame="page-content" data-turbo-prefetch class="menu-item group"
                                             :class="[
                                                 isActive('{{ $item['path'] }}') ? 'menu-item-active' :
                                                 'menu-item-inactive',
