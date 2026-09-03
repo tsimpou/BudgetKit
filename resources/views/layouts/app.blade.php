@@ -34,7 +34,9 @@
             @include('layouts.app-header')
             <!-- app header end -->
             <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-                @yield('content')
+                <turbo-frame id="page-content" data-turbo-action="advance">
+                    @yield('content')
+                </turbo-frame>
                 <x-footer />
             </div>
         </div>

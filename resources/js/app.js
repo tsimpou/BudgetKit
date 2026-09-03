@@ -1,19 +1,18 @@
 import './bootstrap';
+import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './stores';
 
 window.Alpine = Alpine;
+window.Turbo = Turbo;
 
 Alpine.start();
 
-// Initialize components on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    // Map imports
+function initPageComponents() {
     if (document.querySelector('#mapOne')) {
         import('./components/map').then(module => module.initMap());
     }
 
-    // Chart imports
     if (document.querySelector('#chartOne')) {
         import('./components/chart/chart-1').then(module => module.initChartOne());
     }
@@ -33,13 +32,36 @@ document.addEventListener('DOMContentLoaded', () => {
         import('./components/chart/chart-13').then(module => module.initChartThirteen());
     }
 
-    // Calendar init
     if (document.querySelector('#calendar')) {
         import('./components/calendar-init').then(module => module.calendarInit());
     }
 
-    // Stats charts (donut + trend bar)
     if (document.querySelector('#donutChart') || document.querySelector('#trendChart')) {
         import('./components/stats-charts').then(module => module.initStatsCharts());
     }
+}
+
+function updateMobileNav() {
+    const path = window.location.pathname;
+
+    document.querySelectorAll('[data-mobile-nav]').forEach((link) => {
+        const href = link.getAttribute('href') ?? '';
+        const linkPath = new URL(href, window.location.origin).pathname;
+        const prefix = link.dataset.mobileNavPrefix;
+        const active = prefix ? path.startsWith(prefix) : path === linkPath;
+
+        link.classList.toggle('text-[#667eea]', active);
+        link.classList.toggle('text-gray-400', !active);
+    });
+}
+
+document.addEventListener('turbo:load', () => {
+    Alpine.initTree(document.body);
+    initPageComponents();
+    updateMobileNav();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    initPageComponents();
+    updateMobileNav();
 });

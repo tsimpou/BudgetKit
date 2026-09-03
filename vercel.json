@@ -41,7 +41,7 @@
         "SESSION_SECURE_COOKIE": "true",
         "MAIL_MAILER": "array",
         "HASH_DRIVER": "argon2id",
-        "CACHE_STORE": "database",
+        "CACHE_STORE": "array",
         "QUEUE_CONNECTION": "sync",
         "APP_PACKAGES_CACHE": "bootstrap/cache/packages.php",
         "APP_SERVICES_CACHE": "bootstrap/cache/services.php",
