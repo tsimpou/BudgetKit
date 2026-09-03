@@ -2,11 +2,6 @@
 @import 'prismjs/themes/prism.min.css';
 @import 'tailwindcss';
 
-.turbo-progress-bar {
-    height: 3px;
-    background: linear-gradient(to right, #667eea, #4ecdc4);
-}
-
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
